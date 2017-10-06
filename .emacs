@@ -10,10 +10,10 @@
 ;; @todo keybindings
 ;;(require 'custom)
 (setq  package-list '(php-auto-yasnippets auto-yasnippet company-php deep-thought-theme
-		      desktop+ geben git-commit ivy jedi-core json-reformat
-		      key-chord magit multiple-cursors neotree paredit-everywhere
-		      python-mode tide undo-tree web-mode fill-column-indicator
-                      browse-kill-ring))
+                      desktop+ geben git-commit ivy jedi-core json-reformat php-mode
+                      key-chord magit multiple-cursors neotree paredit-everywhere
+                      python-mode tide undo-tree web-mode fill-column-indicator
+                      browse-kill-ring python-mode))
 
 (package-initialize)
 
@@ -27,6 +27,8 @@
   (unless (package-installed-p package)
     (package-install package)))
 
+(setq tramp-default-method "ssh")
+
 (setq abbrev-file-name             ;; tell emacs where to read abbrev
       "~/.emacs.d/abbrev_defs")    ;; definitions from...
 
@@ -34,42 +36,40 @@
   (add-to-list 'company-backends 'company-jedi))
 (add-hook 'python-mode-hook 'my/python-mode)
 
-;; ;; aligns annotation to the right hand side
-;; (setq company-tooltip-align-annotations t)
+;; aligns annotation to the right hand side
+(setq company-tooltip-align-annotations t)
 
-;; ;; Formats the buffer before saving
-;; (add-hook 'before-save-hook 'tide-format-before-save)
+;; Formats the buffer before saving
+(add-hook 'before-save-hook 'tide-format-before-save)
 
-;; (add-hook 'typescript-mode-hook #'setup-tide-mode)
+(add-hook 'typescript-mode-hook #'setup-tide-mode)
 ;; (add-to-list 'auto-mode-alist '("\\.go\\'" . prog-mode))
 
 (add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
-(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
-(add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
+;; (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
+;; (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 
 (require 'web-mode)
-;; (add-to-list 'auto-mode-alist '("\\.ts\\'" . web-mode))
-;; (add-hook 'web-mode-hook
-;;           (lambda ()
-;;             (when (string-equal "ts" (file-name-extension buffer-file-name))
-;;               (setup-tide-mode))))
-;; ;; format options
-;; (setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil))
+(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . web-mode))
+(add-hook 'web-mode-hook
+          (lambda ()
+            (when (string-equal "ts" (file-name-extension buffer-file-name))
+              (setup-tide-mode))))
+;; format options
+(setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil))
 
-;; ;; Manual folding function incomplete
-;; ;; (defun toggle-selective-display (column)
-;; ;;       (interactive "P")
-;; ;;       (set-selective-display
-;; ;;        (or column
-;; ;;            (unless selective-display
-;; ;;              (1+ (current-column))))))
+;; Manual folding function incomplete
+;; (defun toggle-selective-display (column)
+;;       (interactive "P")
+;;       (set-selective-display
+;;        (or column
+;;            (unless selective-display
+;;              (1+ (current-column))))))
 
-;; (prefer-coding-system 'utf-8)
-;; ;; Only set this if you wish to retain your own font settings
-;; ;; otherwise, leave it out.
-;; ;; (setq ahungry-theme-font-settings nil)
+(prefer-coding-system 'utf-8)
 
-;; 
 
 (require 'auto-yasnippet)
 ;; (require 'undo-tree)
@@ -109,14 +109,14 @@
 (global-set-key (kbd "C-c C-c") 'comment-region)
 (global-set-key (kbd "C-c C-u") 'uncomment-region)
 
-;; (global-set-key "\C-c l" 'org-store-link)
-;; (global-set-key "\C-c a" 'org-agenda)
-;; (global-set-key "\C-c b" 'org-iswitchb)
+(global-set-key (kbd "C-c l") 'org-store-link)
+(global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-c b") 'org-iswitchb)
 
-;; ;;		(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-;; ;;		(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-;; ;;    (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-;; ;;    (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -128,7 +128,8 @@
     ("246a51f19b632c27d7071877ea99805d4f8131b0ff7acb8a607d4fd1c101e163" default)))
  '(package-selected-packages
    (quote
-    (## deep-thought-theme magit geben company-php python-mode jedi-core json-reformat company-go web-mode undo-tree tide paredit-everywhere neotree multiple-cursors key-chord ivy git-commit desktop+ company-jedi company-emacs-eclim auto-yasnippet))))
+    (php-cs-fixer ## deep-thought-theme magit geben company-php python-mode jedi-core json-reformat company-go web-mode undo-tree tide paredit-everywhere neotree multiple-cursors key-chord ivy git-commit desktop+ company-jedi company-emacs-eclim auto-yasnippet)))
+ '(scroll-bar-mode (quote right)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -154,7 +155,7 @@
 (visual-line-mode)
 (blink-cursor-mode 0)
 (set-clipboard-coding-system 'ctext)
-(set-fill-column 80)
+(set-fill-column 100)
 (auto-compression-mode 1)
 
 (icomplete-mode t)
@@ -214,8 +215,8 @@
 ;; browser
 (when window-system
   (setq gnus-button-url 'browse-url-generic
-	browse-url-generic-program "firefox"
-	browse-url-browser-function gnus-button-url))
+        browse-url-generic-program "firefox"
+        browse-url-browser-function gnus-button-url))
 
 ;; calendar, 75.9780° W
 (setq calendar-latitude 36.8529)
@@ -227,3 +228,22 @@
 
 (load-theme 'deep-thought)
 (autoload 'geben "geben" "DBGp protocol frontend, a script debugger" t)
+(require 'key-chord)
+(key-chord-mode 1)
+
+(require 'php-mode) ;; excutable define
+(require 'php-auto-yasnippets)
+(setq php-auto-yasnippet-php-program "~/.emacs.d/elpa/php-autoyasnippets-2.3.1/Create-PHP-YASnippet.php")
+(define-key php-mode-map (kbd "C-c C-y") 'yas/create-php-snippet)
+
+(add-hook 'php-mode-hook
+          '(lambda ()
+             (require 'company-php)
+             (company-mode t)
+             (ac-php-core-eldoc-setup) ;; enable eldoc
+             (make-local-variable 'company-backends)
+             (add-to-list 'company-backends 'company-ac-php-backend)))
+
+
+
+;; (key-chord-define-global "")
