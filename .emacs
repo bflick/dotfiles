@@ -87,8 +87,8 @@
 
 (add-hook 'go-mode-hook #'hs-minor-mode)
 (add-hook 'prog-mode-hook #'undo-tree-mode)
-(add-hook 'prog-mode-hook (lambda () (local-set-key "C-xu" (quote undo-tree-undo))))
-(add-hook 'prog-mode-hook (lambda ()(local-set-key "C-xU" (quote undo-tree-redo))))
+(add-hook 'prog-mode-hook (lambda () (local-set-key (kbd "C-xu") (quote undo-tree-undo))))
+(add-hook 'prog-mode-hook (lambda ()(local-set-key (kbd "C-xU") (quote undo-tree-redo))))
 
 ;; Define some hot keys
 (key-chord-define-global "~~" 'ansi-term)
@@ -101,6 +101,7 @@
 (key-chord-define-global "qq" 'counsel-ag)
 
 ;; Config
+(global-set-key (kbd "<f8>") #'neo-tree-toggle)
 (global-set-key (kbd "M-n") #'aya-create)
 (global-set-key (kbd "M-y") #'aya-expand)
 (global-set-key (kbd "M-p") 'ace-window)
