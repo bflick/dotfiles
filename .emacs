@@ -1,19 +1,14 @@
 (require 'package)
-(add-to-list 'load-path ".config/.editor.d")
-(add-to-list 'load-path ".")
-
-(require 'package)
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")
                          ("melpa" . "http://melpa.milkbox.net/packages/")))
 
-;; @todo keybindings
 ;;(require 'custom)
-(setq  package-list '(php-auto-yasnippets auto-yasnippet company-php deep-thought-theme
+(setq package-list '(php-auto-yasnippets auto-yasnippet company-php deep-thought-theme
                       desktop+ geben git-commit ivy jedi-core json-reformat php-mode
                       key-chord magit multiple-cursors neotree paredit-everywhere
                       python-mode tide undo-tree web-mode fill-column-indicator
-                      browse-kill-ring python-mode))
+                      browse-kill-ring ace-window htmlize go-mode))
 
 (package-initialize)
 
@@ -21,13 +16,22 @@
 (unless package-archive-contents
   (package-refresh-contents))
 
-
 ; install the missing packages
 (dolist (package package-list)
   (unless (package-installed-p package)
     (package-install package)))
 
+(require 'auto-yasnippet)
+(require 'browse-kill-ring)
+(require 'fill-column-indicator)
+(require 'key-chord)
+(require 'php-mode) ;; excutable define
+(require 'php-auto-yasnippets)
+(require 'undo-tree)
+(require 'web-mode)
+
 (setq tramp-default-method "ssh")
+(setq tramp-copy-size-limit nil)
 
 (setq abbrev-file-name             ;; tell emacs where to read abbrev
       "~/.emacs.d/abbrev_defs")    ;; definitions from...
@@ -39,17 +43,20 @@
 ;; aligns annotation to the right hand side
 (setq company-tooltip-align-annotations t)
 
+;; Allow reading of bash aliases
+(setq shell-file-name "bash")
+(setq shell-command-switch "-ic")
+
 ;; Formats the buffer before saving
 (add-hook 'before-save-hook 'tide-format-before-save)
 
 (add-hook 'typescript-mode-hook #'setup-tide-mode)
-;; (add-to-list 'auto-mode-alist '("\\.go\\'" . prog-mode))
 
 (add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
-;; (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
-;; (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
+(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
+(add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 
-(require 'web-mode)
+
 (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . web-mode))
@@ -71,10 +78,6 @@
 (prefer-coding-system 'utf-8)
 
 
-(require 'auto-yasnippet)
-;; (require 'undo-tree)
-
-(require 'key-chord)
 (key-chord-mode 1)
 
 ;; (add-hook 'org-mode-hook 'turn-on-font-lock)
@@ -87,8 +90,8 @@
 
 (add-hook 'go-mode-hook #'hs-minor-mode)
 (add-hook 'prog-mode-hook #'undo-tree-mode)
-(add-hook 'prog-mode-hook (lambda () (local-set-key (kbd "C-xu") (quote undo-tree-undo))))
-(add-hook 'prog-mode-hook (lambda ()(local-set-key (kbd "C-xU") (quote undo-tree-redo))))
+(add-hook 'prog-mode-hook (lambda () (local-set-key (kbd "C-x u") (quote undo-tree-undo))))
+(add-hook 'prog-mode-hook (lambda ()(local-set-key (kbd "C-x U") (quote undo-tree-redo))))
 
 ;; Define some hot keys
 (key-chord-define-global "~~" 'ansi-term)
@@ -99,12 +102,13 @@
 (key-chord-define-global "bq" 'ivy-switch-buffer)
 (key-chord-define-global "qs" 'swiper)
 (key-chord-define-global "qq" 'counsel-ag)
+(key-chord-define-global " o" 'generate-new-org-buffer)
 
 ;; Config
-(global-set-key (kbd "<f8>") #'neo-tree-toggle)
+(global-set-key (kbd "<f8>") #'neotree-toggle)
 (global-set-key (kbd "M-n") #'aya-create)
 (global-set-key (kbd "M-y") #'aya-expand)
-(global-set-key (kbd "M-p") 'ace-window)
+(global-set-key (kbd "M-p") #'ace-window)
 (global-set-key (kbd "M-t") 'neotree-toggle)
 (global-set-key (kbd "M-s") 'magit-status)
 (global-set-key (kbd "C-c C-c") 'comment-region)
@@ -127,9 +131,11 @@
  '(custom-safe-themes
    (quote
     ("246a51f19b632c27d7071877ea99805d4f8131b0ff7acb8a607d4fd1c101e163" default)))
+ '(org-babel-load-languages (quote ((emacs-lisp . t) (js . t) (php . t) (python . t))))
+ '(org-confirm-babel-evaulate nil)
  '(package-selected-packages
    (quote
-    (php-cs-fixer ## deep-thought-theme magit geben company-php python-mode jedi-core json-reformat company-go web-mode undo-tree tide paredit-everywhere neotree multiple-cursors key-chord ivy git-commit desktop+ company-jedi company-emacs-eclim auto-yasnippet)))
+    (htmlize ob-php ace-window php-cs-fixer ## deep-thought-theme magit geben company-php python-mode jedi-core json-reformat company-go web-mode undo-tree tide paredit-everywhere neotree multiple-cursors key-chord ivy git-commit desktop+ company-jedi company-emacs-eclim auto-yasnippet)))
  '(scroll-bar-mode (quote right)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -183,11 +189,9 @@
 (setq mouse-wheel-follow-mouse 't)
 
 ;; column indicator
-(require 'fill-column-indicator)
 (setq fci-rule-column 80)
 
 ;; browse kill ring
-(require 'browse-kill-ring)
 (browse-kill-ring-default-keybindings)
 
 ;; display time
@@ -200,18 +204,18 @@
 (set-selection-coding-system 'utf-8)
 
 ;; font
-;; (set-default-font "DejaVu Sans Mono-12")
-;; (when window-system
-;;   (set-fontset-font (frame-parameter nil 'font)
-;;                     'han '("WenQuanYi Zen Hei Mono" . "unicode-bmp"))
-;;   (set-fontset-font (frame-parameter nil 'font)
-;;                     'cjk-misc '("WenQuanYi Zen Hei Mono" . "unicode-bmp"))
-;;   (set-fontset-font (frame-parameter nil 'font)
-;;                     'bopomofo '("WenQuanYi Zen Hei Mono" . "unicode-bmp"))
-;;   (set-fontset-font (frame-parameter nil 'font)
-;;                     'gb18030 '("WenQuanYi Zen Hei Mono" . "unicode-bmp"))
-;;   (add-to-list 'default-frame-alist
-;;                '(font . "DejaVu Sans Mono-12")))
+(set-default-font "DejaVu Sans Mono-12")
+(when window-system
+  (set-fontset-font (frame-parameter nil 'font)
+                    'han '("WenQuanYi Zen Hei Mono" . "unicode-bmp"))
+  (set-fontset-font (frame-parameter nil 'font)
+                    'cjk-misc '("WenQuanYi Zen Hei Mono" . "unicode-bmp"))
+  (set-fontset-font (frame-parameter nil 'font)
+                    'bopomofo '("WenQuanYi Zen Hei Mono" . "unicode-bmp"))
+  (set-fontset-font (frame-parameter nil 'font)
+                    'gb18030 '("WenQuanYi Zen Hei Mono" . "unicode-bmp"))
+  (add-to-list 'default-frame-alist
+               '(font . "DejaVu Sans Mono-12")))
 
 ;; browser
 (when window-system
@@ -229,12 +233,11 @@
 
 (load-theme 'deep-thought)
 (autoload 'geben "geben" "DBGp protocol frontend, a script debugger" t)
-(require 'key-chord)
+
 (key-chord-mode 1)
 
-(require 'php-mode) ;; excutable define
-(require 'php-auto-yasnippets)
 (setq php-auto-yasnippet-php-program "~/.emacs.d/elpa/php-autoyasnippets-2.3.1/Create-PHP-YASnippet.php")
+
 (define-key php-mode-map (kbd "C-c C-y") 'yas/create-php-snippet)
 
 (add-hook 'php-mode-hook
@@ -245,6 +248,26 @@
              (make-local-variable 'company-backends)
              (add-to-list 'company-backends 'company-ac-php-backend)))
 
+;; Use this variable to determine what files are parsed for 'C-c a a' (org-show-agenda)
+(setq org-agenda-files (list "InMotion.org"))
 
+(define-skeleton org-skeleton
+  "Header info for a emacs-org file."
+  "Title: "
+  "#+TITLE:" str " \n"
+  "#+AUTHOR: Brian Flick\n"
+  "#+email: brianfl@inmotionhosting.com\n"
+  "#+OPTIONS: ^:nil\n"
+  "#+INFOJS_OPT: \n"
+  "#+BABEL: :session *js* :cache yes :results output graphics :exports both :tangle yes \n"
+  "-----"
+ )
 
-;; (key-chord-define-global "")
+(defun generate-new-org-buffer (name)
+  (interactive "sOrg File name: ")
+  (generate-new-buffer name)
+  (switch-to-buffer name)
+  (goto-char 0)
+  (org-mode)
+  (yas-minor-mode)
+  (org-skeleton))
