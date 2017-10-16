@@ -8,7 +8,7 @@
                       desktop+ geben git-commit ivy jedi-core json-reformat php-mode
                       key-chord magit multiple-cursors neotree paredit-everywhere
                       python-mode tide undo-tree web-mode fill-column-indicator
-                      browse-kill-ring ace-window htmlize go-mode))
+                      browse-kill-ring ace-window htmlize go-mode counsel ace-isearch))
 
 (package-initialize)
 
@@ -29,8 +29,11 @@
 (require 'php-auto-yasnippets)
 (require 'undo-tree)
 (require 'web-mode)
+(require 'ace-isearch)
 
-(setq tramp-default-method "ssh")
+(global-ace-isearch-mode +1)
+
+(setq tramp-default-method "scp")
 (setq tramp-copy-size-limit nil)
 
 (setq abbrev-file-name             ;; tell emacs where to read abbrev
@@ -56,7 +59,6 @@
 (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 
-
 (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . web-mode))
@@ -67,26 +69,11 @@
 ;; format options
 (setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil))
 
-;; Manual folding function incomplete
-;; (defun toggle-selective-display (column)
-;;       (interactive "P")
-;;       (set-selective-display
-;;        (or column
-;;            (unless selective-display
-;;              (1+ (current-column))))))
-
 (prefer-coding-system 'utf-8)
-
 
 (key-chord-mode 1)
 
-;; (add-hook 'org-mode-hook 'turn-on-font-lock)
-
-(add-hook 'php-mode-hook
-         '(lambda ()
-            (require 'company-php)
-            (company-mode t)
-            (add-to-list 'company-backends 'company-ac-php-backend )))
+(add-hook 'org-mode-hook 'turn-on-font-lock)
 
 (add-hook 'go-mode-hook #'hs-minor-mode)
 (add-hook 'prog-mode-hook #'undo-tree-mode)
@@ -102,7 +89,9 @@
 (key-chord-define-global "bq" 'ivy-switch-buffer)
 (key-chord-define-global "qs" 'swiper)
 (key-chord-define-global "qq" 'counsel-ag)
-(key-chord-define-global " o" 'generate-new-org-buffer)
+(key-chord-define-global "+O" 'generate-new-org-buffer)
+(key-chord-define-global "=l" 'goto-line)
+
 
 ;; Config
 (global-set-key (kbd "<f8>") #'neotree-toggle)
@@ -135,7 +124,7 @@
  '(org-confirm-babel-evaulate nil)
  '(package-selected-packages
    (quote
-    (htmlize ob-php ace-window php-cs-fixer ## deep-thought-theme magit geben company-php python-mode jedi-core json-reformat company-go web-mode undo-tree tide paredit-everywhere neotree multiple-cursors key-chord ivy git-commit desktop+ company-jedi company-emacs-eclim auto-yasnippet)))
+    (ace-isearch counsel ctable edbi htmlize ob-php ace-window php-cs-fixer ## deep-thought-theme magit geben company-php python-mode jedi-core json-reformat company-go web-mode undo-tree tide paredit-everywhere neotree multiple-cursors key-chord ivy git-commit desktop+ company-jedi company-emacs-eclim auto-yasnippet)))
  '(scroll-bar-mode (quote right)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
